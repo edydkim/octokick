@@ -1,29 +1,45 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl
 
-##########################################
-#	execute a command on multi servers   #
-#   http://edydkim.github.com            #
-##########################################
+###
+# Copyright © http://edydkim.github.com            
+#
+# 
+# This file is part of OctoKick.
+# 
+# OctoKick is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; version 3 of the
+# License, or any later version.
+# 
+##
 
 use strict;
+use warnings;
 
 use Expect;
 use Data::Dumper;
 use Getopt::Long;
 use Pod::Usage;
      
-my $host = '';
+my $host = 'host';
 my $hostFile = '';
 my $cmd = '';
 my $user = '';
 my $pw = '';
 my $debug = 0;
 
-sub options () {
-	my $help = 0;		# handled locally
+&options;
+
+print "$cmd";
+
+&expected;
+
+# set options
+sub options() {
+	my $help = 0;
 
 	# Process options.
-	if (@ARGV > 0 ) {
+	if (@ARGV > 0) {
 		Getopt::Long::Configure ("bundling_override");
 	    GetOptions('h=s'	=> \$host,
 		       'f=s'	=> \$hostFile,
@@ -34,15 +50,15 @@ sub options () {
 		       'debug'	=> \$debug)
 	    or pod2usage(2);
 	}
+
 	if (@ARGV <= 0 || $help) {
-	    # <- require "Pod/Usage.pm";
-	    # <- import Pod::Usage;
 	    pod2usage(1);
    	    exit 0;
 	}
 }
 
-sub expect() {
+# call expetc
+sub expected() {
 	my $exp = new Expect;
 	$exp->log_file("octokick.log");
 	$exp->log_stdout(0);
@@ -64,11 +80,6 @@ sub expect() {
 	$exp->soft_close();	
 }
 
-options;
 
-print "$cmd";
-
-
-expect;
-
-exit 0;
+1;
+__END__

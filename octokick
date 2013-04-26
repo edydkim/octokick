@@ -42,28 +42,33 @@ sub options () {
 	}
 }
 
+sub expect() {
+	my $exp = new Expect;
+	$exp->log_file("octokick.log");
+	$exp->log_stdout(0);
+	$exp->raw_pty(1);
+	
+	my $cli = "ssh $user\@$host -o StrictHostKeyChecking=no -q $cmd";
+	
+	$exp->spawn($cli) or die "Cannot spawn $cli: $!\n";
+	
+	$exp->expect(5,
+	 [ qr /ssword:*/ => sub { my $exph = shift;
+	                          $exph->send("$pw\n");
+	                          exp_continue; }] );
+	
+	my $read = $exp->exp_before();
+	chomp $read;
+	print Dumper($read);
+	
+	$exp->soft_close();	
+}
+
 options;
 
 print "$cmd";
 
-my $exp = new Expect;
-$exp->log_file("octokick.log");
-$exp->log_stdout(0);
-$exp->raw_pty(1);
 
-my $cli = "ssh $user\@$host -o StrictHostKeyChecking=no -q $cmd";
-
-$exp->spawn($cli) or die "Cannot spawn $cli: $!\n";
-
-$exp->expect(5,
- [ qr /ssword:*/ => sub { my $exph = shift;
-                          $exph->send("$pw\n");
-                          exp_continue; }] );
-
-my $read = $exp->exp_before();
-chomp $read;
-print Dumper($read);
-
-$exp->soft_close();
+expect;
 
 exit 0;

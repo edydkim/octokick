@@ -40,7 +40,7 @@ sub options() {
 
 	# Process options.
 	if (@ARGV > 0) {
-		Getopt::Long::Configure ("bundling_override");
+     	    Getopt::Long::Configure ("bundling_override");
 	    GetOptions('h=s'	=> \$host,
 		       'f=s'	=> \$hostFile,
 		       'help|?'	=> \$help,
@@ -51,10 +51,7 @@ sub options() {
 	    or pod2usage(2);
 	}
 
-	if (@ARGV <= 0 || $help) {
-	    pod2usage(1);
-   	    exit 0;
-	}
+	pod2usage(1) and exit 0 if $help;
 }
 
 # call expetc

@@ -28,12 +28,6 @@ my $user = '';
 my $pw = '';
 my $debug = 0;
 
-&options;
-
-print "$cmd";
-
-&expected;
-
 # set options
 sub options() {
 	my $help = 0;
@@ -72,11 +66,19 @@ sub expected() {
 	
 	my $read = $exp->exp_before();
 	chomp $read;
-	print Dumper($read);
+	print ($read);
+	# if use Dumper
+	# print Dumper($read);
 	
 	$exp->soft_close();	
 }
 
+
+&options;
+
+print "$cmd\n";
+
+&expected;
 
 1;
 __END__

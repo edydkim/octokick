@@ -21,7 +21,7 @@ use Data::Dumper;
 use Getopt::Long;
 use Pod::Usage;
      
-my $host = 'host';
+my $host = '';
 my $hostFile = '';
 my $cmd = '';
 my $user = '';
@@ -48,14 +48,18 @@ sub options() {
 	pod2usage(1) and exit 0 if $help;
 }
 
-# call expetc
+# call expect
 sub expected() {
+	my $h = shift;
+
+	print "\n$h\n" if $debug;
+	
 	my $exp = new Expect;
 	$exp->log_file("octokick.log");
 	$exp->log_stdout(0);
 	$exp->raw_pty(1);
 	
-	my $cli = "ssh $user\@$host -o StrictHostKeyChecking=no -q $cmd";
+	my $cli = "ssh $user\@$h -o StrictHostKeyChecking=no -q $cmd";
 	
 	$exp->spawn($cli) or die "Cannot spawn $cli: $!\n";
 	
@@ -66,19 +70,30 @@ sub expected() {
 	
 	my $read = $exp->exp_before();
 	chomp $read;
-	print ($read);
+	print $read;
+	print "\n\n";
 	# if use Dumper
 	# print Dumper($read);
 	
 	$exp->soft_close();	
 }
 
+# run to each files
+sub run() {
+	open my $fh, "<", "$hostFile" or die "Can't open $hostFile: $!";
+	while(my $line = readline $fh){ 
+		chomp $line;
+		print "HOST : $line\n";
+		&expected($line);
+	}
+	close $fh;
+}
 
 &options;
 
-print "$cmd\n";
+print "CMD : $cmd\n";
 
-&expected;
+if ($hostFile) { &run; } else { &expected($host); }
 
 1;
 __END__

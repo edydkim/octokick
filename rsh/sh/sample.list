@@ -1,4 +1,4 @@
-#-bash-3.2$ cat sample.list
+# -bash-3.2$ cat sample.list
 HOST00
 HOST01
 #HOST02
@@ -6,3 +6,8 @@ HOST01
 HOST10
 HOST11
 HOST12
+
+# how to run..
+# octokick -f sample.list -c "cat /usr/local/apache2/logs/access_log | awk '{print \$1, \$2}'"
+# or
+# octokick -f sample.list -c "cat /usr/local/apache2/logs/access_log | grep some | grep -v grep | wc -l"

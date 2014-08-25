@@ -1,0 +1,8 @@
+#-bash-3.2$ cat sample.list
+HOST00
+HOST01
+#HOST02
+
+HOST10
+HOST11
+HOST12

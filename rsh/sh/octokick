@@ -1,0 +1,77 @@
+#--------------------------------------#
+# octokick - run rsh on multi servers
+# author : eddy.kim
+# created by 7/27/2014
+#--------------------------------------#
+
+#!/bin/sh
+
+##### Variables
+INTERACTIVE=0
+_HOSTS_=
+_USER_=username
+_COMMAND_=
+
+##### Functions
+function usage {
+    echo "usage: octokick [[-i]] | [-h]] <-f|--file host's file> <-c|--command command>"
+}
+
+function exec {
+    echo "Did you want to kinit for getting a credential? [y/n]"
+    read Y_N
+    if [[ x${Y_N} == "xy" || x${Y_N} == "xY" ]]; then
+        kinit
+    fi
+
+    if [ "x${_HOSTS_}" = "x" ]; then
+        usage
+        exit 1
+    fi
+
+    for LINE in `cat ${_HOSTS_}`
+    do
+        LINE=`echo ${LINE} | sed -e s/^\#.*//`
+        if [ x${LINE} == "x" ]; then
+	    continue
+	fi
+
+    echo "HOST : ${LINE}"
+    rsh ${LINE} -l ${_USER_} -x ${_COMMAND_}
+    echo "HOST : ${LINE} is done. Press a enter key.."
+    read nothing
+    done
+}
+
+##### Main
+while [ "$1" != "" ]; do
+    case $1 in
+        -l)           		shift
+                                _USER_=$1
+                                ;;
+        -f | --file )           shift
+			        _HOSTS_=$1
+			        ;;
+        -c | --command )        shift
+			        _COMMAND_=$1
+			        ;;								
+        -i | --interactive )    INTERACTIVE=1
+                                ;;
+        -h | --help )           usage
+                                exit
+                                ;;
+        * )                     usage
+                                exit 1
+    esac
+    shift
+done
+
+if [ "${INTERACTIVE}" = "1" ]; then
+	echo "interactive is on"
+else
+	echo "interactive is off"
+fi
+
+exec
+
+exit 0
